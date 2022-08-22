@@ -1,4 +1,4 @@
-mod howlongtobeat;
+use howlongtobeat;
 
 #[test]
 fn test_search() {

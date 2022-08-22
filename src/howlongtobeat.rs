@@ -48,7 +48,6 @@ pub fn search(game: String) -> Vec<Games> {
     let times = document.select(&time_selector).map(|x| x.inner_html());
 
     times.zip(0..401).for_each(|(item, _)| {
-        
         if item == "Main Story" || item == "Main + Extra" || item == "Completionist" {
         } else {
             if item == "" {
@@ -56,14 +55,12 @@ pub fn search(game: String) -> Vec<Games> {
             } else {
                 if item.contains("Hours") {
                     time_vector.push(item.replace(" Hours ", ""));
-                    
                 } else {
                     time_vector.push("--".to_string());
                 }
             }
         }
     });
-   
     // Vector for Games struct
     let mut games = vec![];
 
