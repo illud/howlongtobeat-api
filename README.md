@@ -12,7 +12,7 @@ It is an awesome website and a great service, also heavily living from community
 ### Install the dependency
 
 ```rust
-howlongtobeat = "1.0.0"
+howlongtobeat = "0.4.0"
 ```
 
 ### Use in code
@@ -21,14 +21,14 @@ howlongtobeat = "1.0.0"
 
 
 ```rust
-use howlongtobeat::Search;
+use howlongtobeat::search;
 ```
 
 
 #### Searching for a game
 
 ```rust
-let games_found = Search("Elden Ring".to_string());
+let games_found = search("Elden Ring".to_string());
 println!("{:#?}", games_found);
 ```
 
