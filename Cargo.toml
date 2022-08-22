@@ -5,11 +5,11 @@ edition = "2021"
 description = "Simple api for https://howlongtobeat.com"
 homepage = "https://github.com/saturnavt/howlongtobeat-api"
 repository = "https://github.com/saturnavt/howlongtobeat-api"
-readme = "README.me"
+readme = "README.md"
 include = [
     "src/**/*",
     "Cargo.toml",
-    "README.me",
+    "README.md",
 ]
 keywords = [
     "howlongtobeat"
