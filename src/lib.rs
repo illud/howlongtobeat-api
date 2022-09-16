@@ -5,124 +5,115 @@ use serde::{Deserialize, Serialize};
 // Games struct
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Games {
-    title: String,
-    img: String,
-    main: String,
-    extra: String,
-    completionist: String,
+  title: String,
+  img: String,
+  main: String,
+  extra: String,
+  completionist: String,
 }
 
-pub fn search(game: String) -> Vec<Games> {
-    // Get the html from the website
-    let games_found = howlongtobeat(game.to_string())
-        .map_err(|err| println!("{:?}", err))
-        .unwrap();
+#[derive(Deserialize, Debug)]
+struct HowlongtobeatResponse<Object> {
+  data: Vec<Object>,
+}
 
-    // Parse the html into a fragment
-    let document = scraper::Html::parse_document(&games_found);
+#[derive(Deserialize, Debug)]
+pub struct Howlongtobeat {
+  pub game_image: String,
+  pub game_name: String,
+  pub comp_main: i32,
+  pub comp_plus: i32,
+  pub comp_100: i32,
+}
 
-    // Select the elements we want for images
-    let mut img_vector = vec![];
+#[derive(Deserialize, Debug)]
+pub struct Game {
+  pub image: String,
+  pub title: String,
+  pub main: String,
+  pub extra: String,
+  pub completionist: String,
+}
 
-    let img_selector = scraper::Selector::parse("div.search_list_image>a>img").unwrap();
-    let img = document
-        .select(&img_selector)
-        .map(|x| x.value().attr("src").unwrap().to_string());
+pub fn search(game: String) -> Vec<Game> {
+  let games_found = howlongtobeat(game.to_string()).unwrap();
 
-    img.zip(1..101).for_each(|(item, _)| img_vector.push(item));
+  return games_found;
+}
 
-    // Select the elements we want for titles
-    let mut titles_vector = vec![];
+fn seconds_to_time(time: i32) -> String {
+  let hours: i32 = time / 3600;
+  let minutes: i32 = time % 3600 / 60;
 
-    let title_selector = scraper::Selector::parse(".shadow_text>a").unwrap();
-    let titles = document.select(&title_selector).map(|x| x.inner_html());
+  return hours.to_string() + "h " + &minutes.to_string() + "m";
+}
 
-    titles
-        .zip(1..101)
-        .for_each(|(item, _)| titles_vector.push(item));
-
-    // Select the elements we want for Main Story, Main + Extra, Completionist
-    let mut time_vector = vec![];
-
-    let time_selector = scraper::Selector::parse(".search_list_tidbit").unwrap();
-    let times = document.select(&time_selector).map(|x| x.inner_html());
-
-    times.zip(0..401).for_each(|(item, _)| {
-        if item == "Main Story" || item == "Main + Extra" || item == "Completionist" {
-        } else {
-            if item == "" {
-                time_vector.push("--".to_string());
-            } else {
-                if item.contains("Hours") {
-                    time_vector.push(item.replace(" Hours ", ""));
-                } else {
-                    time_vector.push("--".to_string());
-                }
-            }
-        }
-    });
-    // Vector for Games struct
-    let mut games = vec![];
-
-    // Create vectors of vectors for each game time
-    let time_chunks: Vec<Vec<String>> = time_vector.chunks(3).map(|s| s.into()).collect();
-    // println!("{:#?}", time_chunks);
-
-    // Create vector of Games structs
-    // verified time_chunks in the future (i think it may couse a lost of data)
-    for i in 0..time_chunks.len() {
-        let game = Games {
-            title: titles_vector[i].to_string(),
-            img: String::from("https://howlongtobeat.com") + img_vector[i].to_string().as_str(),
-            main: time_chunks[i][0].to_string(),
-            extra: time_chunks[i][1].to_string(),
-            completionist: time_chunks[i][2].to_string(),
-        };
-
-        // Serializes and pushes the game struct into the vector of games
-        // let serialized = serde_json::to_string(&game).unwrap().to_string();
-        // println!("{:#?}", game);
-
-        // games.push(game);
-        games.push(game);
-    }
-
-    // Return the vector of games
-    return games;
+fn line_to_words(line: &str) -> Vec<String> {
+  line.split_whitespace().map(str::to_string).collect()
 }
 
 #[tokio::main]
-async fn howlongtobeat(game: String) -> Result<String, Box<dyn std::error::Error>> {
-    // Post request to howlongtobeat
-    let response = reqwest::Client::new()
-        .post("https://howlongtobeat.com/search_results?page=1")
-        .form(&[
-            ("queryString", game.to_string()),
-            ("t", "games".to_string()),
-            ("sorthead", "popular".to_string()),
-            ("sortd", "Normal Order".to_string()),
-            ("plat", "".to_string()),
-            ("length_type", "main".to_string()),
-            ("length_min", "".to_string()),
-            ("length_max", "".to_string()),
-            ("detail", "0".to_string()),
-            ("v", "".to_string()),
-            ("f", "".to_string()),
-            ("g", "".to_string()),
-            ("randomize", "0".to_string()),
-        ])
+async fn howlongtobeat(game: String) -> Result<Vec<Game>, reqwest::Error> {
+  // Post request to howlongtobeat
+  let response: serde_json::Value = reqwest::Client::new()
+        .post("https://www.howlongtobeat.com/api/search")
+        .json(&serde_json::json!(
+            {
+                "searchType": "games",
+                "searchTerms": line_to_words(game.as_str()),
+                "searchPage": 1,
+                "size": 20,
+                "searchOptions": {
+                  "games": {
+                    "userId": 0,
+                    "platform": "",
+                    "sortCategory": "popular",
+                    "rangeCategory": "main",
+                    "rangeTime": {
+                      "min": 0,
+                      "max": 0
+                    },
+                    "gameplay": {
+                      "perspective": "",
+                      "flow": "",
+                      "genre": ""
+                    },
+                    "modifier": ""
+                  },
+                  "users": {
+                    "sortCategory": "postcount"
+                  },
+                  "filter": "",
+                  "sort": 0,
+                  "randomizer": 0
+                }
+              }
+        ))
         .header(reqwest::header::USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36")
-        .header("Content-type", "application/x-www-form-urlencoded")
+        .header("Content-type", "application/json; charset=UTF-8")
         .header("If-None-Match", "wyzzy")
         .header("Accept", "*/*")
         .header("origin", "https://howlongtobeat.com")
         .header("referer", "https://howlongtobeat.com")
         .send()
+        .await?
+        .json()
         .await?;
 
-    // Get response from howlongtobeat
-    let res_body = response.text().await?;
+  let json_games_found: HowlongtobeatResponse<Howlongtobeat> =
+    serde_json::from_str(&response.to_string()).expect("JSON was not well-formatted");
 
-    // Return response from howlongtobeat
-    return Ok(res_body);
+  let mut games = vec![];
+
+  for elem in json_games_found.data {
+    games.push(Game {
+      image: String::from("https://howlongtobeat.com/games/".to_owned() + &elem.game_image),
+      title: String::from(elem.game_name),
+      main: seconds_to_time(elem.comp_main),
+      extra: seconds_to_time(elem.comp_plus),
+      completionist: seconds_to_time(elem.comp_100),
+    })
+  }
+  // Return response from howlongtobeat
+  return Ok(games);
 }

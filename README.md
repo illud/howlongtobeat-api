@@ -12,7 +12,7 @@ It is an awesome website and a great service, also heavily living from community
 ### Install the dependency
 
 ```rust
-howlongtobeat = "0.4.0"
+howlongtobeat = "0.5.0"
 ```
 
 ### Use in code
@@ -36,31 +36,22 @@ println!("{:#?}", games_found);
 
 ```rust
 [
-    Games {
+    Game {
+        image: "https://howlongtobeat.com/games/68151_Elden_Ring.jpg",
         title: "Elden Ring",
-        img: "https://howlongtobeat.com/games/68151_Elden_Ring.jpg",
-        main: "52",
-        extra: "98",
-        completionist: "131",
+        main: "52h 39m",
+        extra: "98h 11m",
+        completionist: "131h 19m",
     },
-    Games {
+    Game {
+        image: "https://howlongtobeat.com/games/108888_Elden_Ring_GB.jpg",
         title: "Elden Ring GB",
-        img: "https://howlongtobeat.com/games/108888_Elden_Ring_GB.jpg",
-        main: "--",
-        extra: "--",
-        completionist: "--",
+        main: "0h 21m",
+        extra: "0h 29m",
+        completionist: "0h 0m",
     },
 ]
 ```
-
-### Missing features
-    Single-Player
-    Solo
-    Co-Op
-    Vs.
-
-### Why missing features
-    To get the hours to complete a online game is really hard becouse it depends on how long you will play it or how many updates will the game have in the future. Not even in howlongtobeat page is accurated for example take a look at (Valorant) it says 23½ Hours ive play it and it take way more than that, there are many online games that shows the wrong time.
 
 ## License
 
