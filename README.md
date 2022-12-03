@@ -12,7 +12,7 @@ It is an awesome website and a great service, also heavily living from community
 ### Install the dependency
 
 ```rust
-howlongtobeat = "0.5.0"
+howlongtobeat = "0.5.1"
 ```
 
 ### Use in code
