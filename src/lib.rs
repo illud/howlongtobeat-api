@@ -1,14 +1,4 @@
-use serde::{Deserialize, Serialize};
-
-// Games struct
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
-pub struct Games {
-    title: String,
-    img: String,
-    main: String,
-    extra: String,
-    completionist: String,
-}
+use serde::Deserialize;
 
 #[derive(Deserialize, Debug, PartialEq)]
 struct HowlongtobeatResponse<Object> {

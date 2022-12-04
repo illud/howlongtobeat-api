@@ -8,9 +8,9 @@ fn test_search() {
         Game {
             image: String::from("https://howlongtobeat.com/games/68151_Elden_Ring.jpg".to_owned()),
             title: String::from("Elden Ring"),
-            main: String::from("54h 22m"),
-            extra: String::from("98h 55m"),
-            completionist: String::from("132h 19m"),
+            main: String::from("54h 21m"),
+            extra: String::from("98h 58m"),
+            completionist: String::from("132h 22m"),
         },
         Game {
             image: String::from(
