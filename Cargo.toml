@@ -3,8 +3,8 @@ name = "howlongtobeat"
 version = "0.5.2"
 edition = "2021"
 description = "Simple api for https://howlongtobeat.com"
-homepage = "https://github.com/saturnavt/howlongtobeat-api"
-repository = "https://github.com/saturnavt/howlongtobeat-api"
+homepage = "https://github.com/illud/howlongtobeat-api"
+repository = "https://github.com/illud/howlongtobeat-api"
 readme = "README.md"
 include = [
     "src/**/*",
